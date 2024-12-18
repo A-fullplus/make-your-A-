@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Split MCQ Processor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .section {
+            flex: 1;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            background-color: #444;
+            color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        textarea {
+            flex: 1;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Section 1: Input Questions -->
+    <div class="section">
+        <h2>1. Input Questions</h2>
+        <textarea id="questionsInput" placeholder="Paste your questions here (separated by a blank line)..."></textarea>
+        <button onclick="parseQuestions()">Parse Questions</button>
+    </div>
+
+    <!-- Section 2: Input Answer Key -->
+    <div class="section">
+        <h2>2. Input Answer Key</h2>
+        <textarea id="answerKeyInput" placeholder="Enter the correct answers here (e.g., 1 A, 2 B, etc.)"></textarea>
+    </div>
+
+    <!-- Section 3: Output Section -->
+    <div class="section">
+        <h2>3. Output</h2>
+        <div id="outputContainer" class="output">
+            <p>Click 'Parse Questions' to see the output here...</p>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+
+        function parseQuestions() {
+            const inputText = document.getElementById("questionsInput").value.trim();
+            const blocks = inputText.split(/\n\s*\n/); // Split by blank lines
+            questions = blocks.map(block => {
+                const lines = block.trim().split("\n");
+                const question = lines[0];
+                const options = lines.slice(1).map((line, i) => ({
+                    letter: String.fromCharCode(65 + i), // A, B, C, D...
+                    text: line.slice(3).trim()
+                }));
+                shuffleArray(options); // Shuffle the options only
+                return { question, options };
+            });
+            displayOutput();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayOutput() {
+            const outputContainer = document.getElementById("outputContainer");
+            outputContainer.innerHTML = ""; // Clear previous content
+
+            questions.forEach((q, index) => {
+                const questionBlock = document.createElement("div");
+                questionBlock.className = "output";
+                questionBlock.innerHTML = `
+                    <strong>Q${index + 1}: ${q.question}</strong><br>
+                    ${q.options.map(opt => `
+                        <label>${opt.letter}: ${opt.text}</label><br>
+                    `).join("")}
+                `;
+                outputContainer.appendChild(questionBlock);
+            });
+        }
+    </script>
+</body>
+</html>
